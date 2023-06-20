@@ -1,8 +1,17 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 import time
+import argparse
 
-listenPort = 8000 # to do: argument here
+parser = argparse.ArgumentParser(description="HTTP tarpit")
+parser.add_argument("-p", "--port", help="Port number (default: 8000)", required=False)
+parser.add_argument("-a", "--address", help="Listen address", required=False)
+parser.add_argument("-t", "--tar", help="Tarpit depth (default: 59). One HTML element each second.", required=False)
+arguments = parser.parse_args()
+listenPort = int(arguments.port) or 8000
+listenAddress = (arguments.address or '', listenPort)
+tarDepth = int(arguments.tar) or 59
+
 head = "<!DOCTYPE html><html><head><title>The slow page</title><body>"
 body = "<p>This is going to take a while...</p>"
 tail = "<p>Done, thank you for your patience and please visit us again.</p></body></html>"
@@ -15,12 +24,11 @@ class HTTPResponse(BaseHTTPRequestHandler):
         self.send_header('X-Forwarded-For', self.client_address[0])
         self.end_headers()
         self.wfile.write(head.encode())
-        for _ in range(59): # to do: argument here
+        for _ in range(tarDepth):
             self.wfile.write(body.encode())
             time.sleep(1)
         self.wfile.write(tail.encode())
 def startTarpit(server=HTTPServer, response=HTTPResponse, port=listenPort):
-    listenAddress = ('', listenPort) #to do: argument here
     httpd = server(listenAddress, response)
     logging.info(f'now listening on {listenAddress}')
     httpd.serve_forever()
