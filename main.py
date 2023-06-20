@@ -3,7 +3,11 @@ import logging
 import time
 import argparse
 
-parser = argparse.ArgumentParser(description="HTTP tarpit")
+parser = argparse.ArgumentParser(
+    prog="python-http",
+    description="a horrible name for a little test project. it's an HTTP tarpit that sends an html page slowly over some time",
+    epilog="I would like to thank the academy"
+)
 parser.add_argument("-p", "--port", help="Port number (default: 8000)", required=False)
 parser.add_argument("-a", "--address", help="Listen address", required=False)
 parser.add_argument("-t", "--tar", help="Tarpit depth (default: 59). One HTML element each second.", required=False)
